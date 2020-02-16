@@ -19,7 +19,7 @@ void errMsgArg();
 #define BADKEY 'x'
 
 
-void _malloc();
+void _malloc(int space_needed);
 void _free();
 void blocklist();
 void writemem();
@@ -60,9 +60,9 @@ do
 		
 		switch (casefromstr(argv[0])){
 			case 'm':					//malloc
-					//if (argCount == 2){
-						_malloc();
-					//}
+					if (argCount == 2){
+						_malloc(atoi(argv[1]));
+					}
 					//else
 						//errMsgArg();
 				break;
@@ -102,32 +102,77 @@ do
 			a_count = 0;
 		}
 	}while(strcmp(input,"quit") != 0);
-
-
-	int count =0;
-	while(count <= 127)
-	{
-		int payload_length = heap[count]/2;
-		int allocated = heap[count] % 2;
-		if(allocated)
-			printf("%d, %d, %s", count + 1, payload_length - 1, ALLOCATED);
-		else
-			printf("%d, %d, %s", count + 1, payload_length - 1, FREE);
-			
-		count = count +  payload_length + 1;
-	}	
-
 }
 
 
-void _malloc(){
-	printf("malloc function\n");
+void _malloc(int space_needed){
+	int count = 0;
+	int nextBest = -1;
+	int payload_length;
+	int allocated;
+	
+	// iterate through the free implicit list
+	while(count < 127){
+		payload_length = heap[count]/2;
+		allocated = heap[count] % 2;
+		// only work with unallocated blocks
+		if(allocated == 0)
+		{
+			// if block is too small, ignore it.
+
+			// if the block is perfect, allocated it and return it.
+			if((payload_length - 1) == space_needed)
+			{
+				heap[count] = heap[count] | 1;
+				printf("%d\n",count + 1);
+			}
+			// if block is too big, compare it to the stored block and save the smaller one 
+			if((payload_length - 1) > space_needed)
+			{
+				// if empty, initialize
+				if(nextBest = -1)
+					nextBest = count;
+
+				if ((heap[nextBest] / 2) > payload_length)
+					nextBest = count;			
+			}
+		}
+		// Move through block based on the payload size
+		count = count + payload_length;		
+	}
+	// This code assumes that the saved block is bigger than needed or -1;
+	if(nextBest == -1)
+	{
+		printf("No available blocks to malloc.\n");
+		printf("%d\n",-1);
+	}
+	space_needed++;
+	int oldSize = heap[nextBest] >> 1;
+	int newHeader = (space_needed << 1) | 1;
+	// printf("oldSize: %d, newSize: %d\n", oldSize, space_needed);
+	heap[nextBest] = newHeader;
+	heap[nextBest + space_needed] = (oldSize - space_needed) << 1;
+	// printf("old Value: %d, new Value: %d\n", heap[nextBest], heap[nextBest + space_needed]);
+	printf("%d\n", nextBest + 1);
 }
 void _free(){
 	printf("free function\n");
 }
 void blocklist(){
-	printf("blocklist function\n");
+	int count = 0;
+	int payload_length;
+	int allocated;
+	while(count < 127)
+	{
+		payload_length= heap[count]/2;
+		allocated= heap[count] % 2;
+		if(allocated)
+			printf("%d, %d, %s", count + 1, payload_length - 1, ALLOCATED);
+		else
+			printf("%d, %d, %s", count + 1, payload_length - 1, FREE);
+			
+		count = count +  payload_length;
+	}	
 }
 void writemem(){
 	printf("writemem function\n");
