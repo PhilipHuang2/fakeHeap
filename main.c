@@ -20,10 +20,12 @@ void errMsgArg();
 
 
 void _malloc(int space_needed);
-void _free();
+void _free(int allocated_payload);
 void blocklist();
-void writemem();
+void writemem(int address, char* str);
 void printmem();
+
+int is_alloc(int address);
 
 int main()
 {
@@ -63,15 +65,15 @@ do
 					if (argCount == 2){
 						_malloc(atoi(argv[1]));
 					}
-					//else
-						//errMsgArg();
+					else
+						errMsgArg();
 				break;
 			case 'f':					//free
-					//if (argCount == 3){
-					_free();
-					//}
-					//else 
-						//errMsgArg();
+					if (argCount == 2){
+					_free(atoi(argv[1]));
+					}
+					else 
+						errMsgArg();
 				break;
 			case 'b':					//blocklist
 					//if (argCount == 2){
@@ -81,11 +83,11 @@ do
 						//errMsgArg();
 				break;
 			case 'w':					//writemem
-					//if (argCount == 2){
-						writemem(); 	//showDisk(atoi(argv[1]));
-					//}
-					//else
-						//errMsgArg();
+					if (argCount == 3){
+						writemem(atoi(argv[1]),argv[2]); 	//showDisk(atoi(argv[1]));
+					}
+					else
+						errMsgArg();
 				break;
 			case 'p':					//printmem
 					//if (argCount == 1){
@@ -147,17 +149,42 @@ void _malloc(int space_needed){
 		printf("%d\n",-1);
 	}
 	space_needed++;
-	int oldSize = heap[nextBest] >> 1;
-	int newHeader = (space_needed << 1) | 1;
+	int oldSize = heap[nextBest] >> 1;					//divide
+	int newHeader = (space_needed << 1) | 1;			//multi, OR 1
 	// printf("oldSize: %d, newSize: %d\n", oldSize, space_needed);
 	heap[nextBest] = newHeader;
+	//printf("newHeader:%d \n",newHeader);
 	heap[nextBest + space_needed] = (oldSize - space_needed) << 1;
 	// printf("old Value: %d, new Value: %d\n", heap[nextBest], heap[nextBest + space_needed]);
 	printf("%d\n", nextBest + 1);
 }
-void _free(){
-	printf("free function\n");
+void _free(int allocated_payload){
+	//allocated_payload is the pointer to a prev allocated block of memory
+
+	int size = (heap[allocated_payload-1]/2);		//-1 for the allocated size
+	int allocated = heap[allocated_payload-1] % 2;
+	int next = size + allocated_payload;
+	int value = heap[allocated_payload-1];
+	// printf("payload_length: %d \n",size);
+	// printf("allocated?: %d \n",allocated);
+	// printf("next: %d \n",next);
+	// printf("value: %d \n",value);
+	if (allocated){
+		heap[allocated_payload-1] = heap[allocated_payload-1] - 1;
+	}
+	if (is_alloc(next) == 0){
+		heap[allocated_payload-1]+= heap[next-1]; 		//new value
+		next = 0;
+	}
+
+
+	//printf("free function\n");
 }
+
+int is_alloc(int address){
+return heap[address-1] % 2;
+}
+
 void blocklist(){
 	int count = 0;
 	int payload_length;
@@ -166,16 +193,23 @@ void blocklist(){
 	{
 		payload_length= heap[count]/2;
 		allocated= heap[count] % 2;
+		// printf("payload_length: %d \n",payload_length);
+		// printf("allocated?: %d \n",allocated);
+		//printf("heap[count]: %d , count: %d\n",heap[count], count);
 		if(allocated)
 			printf("%d, %d, %s", count + 1, payload_length - 1, ALLOCATED);
 		else
 			printf("%d, %d, %s", count + 1, payload_length - 1, FREE);
 			
+		//printf("current count: %d \n",count);
+	
 		count = count +  payload_length;
+
+		//printf("next count: %d \n",count);	
 	}	
 }
-void writemem(){
-	printf("writemem function\n");
+void writemem(int address, char* str){
+	printf("writemem - arg1: %d, arg2:%s\n", address, str);
 }
 void printmem(){
 	printf("printmem function\n");
