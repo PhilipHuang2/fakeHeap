@@ -23,7 +23,7 @@ void _malloc(int space_needed);
 void _free(int allocated_payload);
 void blocklist();
 void writemem(int address, char* str);
-void printmem();
+void printmem(int address, int length);
 
 int is_alloc(int address);
 int get_header(int address);
@@ -91,11 +91,11 @@ do
 						errMsgArg();
 				break;
 			case 'p':					//printmem
-					//if (argCount == 1){
-						printmem();
-					//}
-					//else
-						//errMsgArg();
+					if (argCount == 3){
+						printmem(atoi(argv[1]),atoi(argv[2]));
+					}
+					else
+						errMsgArg();
 				break;
 		
 		}
@@ -251,8 +251,14 @@ int get_header(int address){
 }
 
 
-void printmem(){
-	printf("printmem function\n");
+void printmem(int address, int length){
+	int count = 0;
+	while(count < length)
+	{
+		printf("%02X ",heap[address+count]);
+		count++;
+	}
+	printf("\n");
 }
 
 
