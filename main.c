@@ -1,5 +1,5 @@
-#include<stdio.h>
-#include<string.h>
+#include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #define ALLOCATED "allocated\n"
 #define FREE "free\n"
@@ -26,6 +26,7 @@ void writemem(int address, char* str);
 void printmem();
 
 int is_alloc(int address);
+int get_header(int address);
 
 int main()
 {
@@ -182,7 +183,7 @@ void _free(int allocated_payload){
 }
 
 int is_alloc(int address){
-return heap[address-1] % 2;
+	return heap[address-1] % 2;
 }
 
 void blocklist(){
@@ -209,8 +210,47 @@ void blocklist(){
 	}	
 }
 void writemem(int address, char* str){
+	char tok;
+	int len = strlen(str);
+	int str_count = 0;
+
+	int limit = address + len;
+
+
+
+	while (address < limit){
+		heap[address] = (int) str[str_count];
+
+		printf("%02X \n",heap[address]);
+
+		address++;
+		str_count++;
+	}
+
 	printf("writemem - arg1: %d, arg2:%s\n", address, str);
+	printf("limit: %d\n",limit);
+
 }
+
+int get_header(int address){
+	int count = 0;
+	int payload_length;
+
+	while(count < 127)
+	{
+		payload_length = heap[count]/2;
+		
+		if (address > count && address < count +  payload_length){
+			return count;
+		}
+
+		count = count +  payload_length;
+		
+	}	
+	return -1;	//return if header not found
+}
+
+
 void printmem(){
 	printf("printmem function\n");
 }
