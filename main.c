@@ -178,9 +178,21 @@ void _free(int allocated_payload){
 	}
 	if (is_alloc(next) == 0){
 		heap[allocated_payload-1]+= heap[next-1]; 		//new value
-		next = 0;
+		
 	}
+	//iterate the payload and set 0
 
+
+
+	int limit = allocated_payload + (heap[allocated_payload-1]/2);
+	int count = allocated_payload;
+	while (count < (limit -1)){
+		heap[count] = 0;
+		count++;
+	}
+	// printf("heap[allocated_payload-1]: %d \n",heap[allocated_payload-1]);
+	// printf("heap[next]: %d \n",heap[next]);
+	// printf("heap[next-1]: %d \n",heap[next-1]);
 
 	//printf("free function\n");
 }
@@ -206,7 +218,9 @@ void blocklist(){
 			printf("%d, %d, %s", count + 1, payload_length - 1, FREE);
 			
 		//printf("current count: %d \n",count);
-	
+		if (payload_length == 0){
+			return;
+		}
 		count = count +  payload_length;
 
 		//printf("next count: %d \n",count);	
