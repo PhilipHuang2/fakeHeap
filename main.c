@@ -147,11 +147,11 @@ void _malloc(int space_needed){
 		count = count + payload_length;		
 	}
 	// This code assumes that the saved block is bigger than needed or -1;
-	// if(nextBest == -1)
-	// {
-	// 	printf("No available blocks to malloc.\n");
-	// 	printf("%d\n",-1);
-	// }
+	if(nextBest == -1)
+	{
+		printf("No available blocks to malloc.\n");
+		printf("%d\n",-1);
+	}
 	space_needed++;
 	int oldSize = heap[nextBest] >> 1;					//divide
 	int newHeader = (space_needed << 1) | 1;			//multi, OR 1
