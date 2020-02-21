@@ -151,6 +151,7 @@ void _malloc(int space_needed){
 	{
 		printf("No available blocks to malloc.\n");
 		printf("%d\n",-1);
+		return;
 	}
 	space_needed++;
 	int oldSize = heap[nextBest] >> 1;					//divide
