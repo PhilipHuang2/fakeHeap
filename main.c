@@ -1,3 +1,5 @@
+//Name: Philip Huang ID: 17535384
+//Name: Carlos Yan Ho ID:56051179
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -31,7 +33,6 @@ int get_header(int address);
 int main()
 {
 	heap[0] = 254;
-	printf("Hello, World.\n");
 
 	char input[90];
 	char * token;
@@ -77,11 +78,8 @@ do
 						errMsgArg();
 				break;
 			case 'b':					//blocklist
-					//if (argCount == 2){
 						blocklist();
-					//}
-					//else 
-						//errMsgArg();
+
 				break;
 			case 'w':					//writemem
 					if (argCount == 3){
@@ -97,7 +95,7 @@ do
 					else
 						errMsgArg();
 				break;
-		
+	
 		}
 		//resets to the start of the argv array
 		if (argv[argCount] == NULL){
@@ -149,7 +147,7 @@ void _malloc(int space_needed){
 	// This code assumes that the saved block is bigger than needed or -1;
 	if(nextBest == -1)
 	{
-		printf("No available blocks to malloc.\n");
+		//printf("No available blocks to malloc.\n");
 		printf("%d\n",-1);
 		return;
 	}
@@ -158,7 +156,7 @@ void _malloc(int space_needed){
 	int newHeader = (space_needed << 1) | 1;			//multi, OR 1
 	// printf("oldSize: %d, newSize: %d\n", oldSize, space_needed);
 	heap[nextBest] = newHeader;
-	//printf("newHeader:%d \n",newHeader);
+	
 	heap[nextBest + space_needed] = (oldSize - space_needed) << 1;
 	// printf("old Value: %d, new Value: %d\n", heap[nextBest], heap[nextBest + space_needed]);
 	printf("%d\n", nextBest + 1);
@@ -176,14 +174,17 @@ void _free(int allocated_payload){
 	// printf("value: %d \n",value);
 	if (allocated){
 		heap[allocated_payload-1] = heap[allocated_payload-1] - 1;
-	}
-	if (is_alloc(next) == 0){
-		heap[allocated_payload-1]+= heap[next-1]; 		//new value
 		
+			if (is_alloc(next) == 0 && is_alloc(allocated_payload) == 0){
+				heap[allocated_payload-1]+= heap[next-1]; 		//new value
+				
+			}
 	}
+	// if (is_alloc(next) == 0 && is_alloc(allocated_payload) == 0){
+	// 	heap[allocated_payload-1]+= heap[next-1]; 		//new value
+		
+	// }
 	//iterate the payload and set 0
-
-
 
 	int limit = allocated_payload + (heap[allocated_payload-1]/2);
 	int count = allocated_payload;
@@ -191,11 +192,7 @@ void _free(int allocated_payload){
 		heap[count] = 0;
 		count++;
 	}
-	// printf("heap[allocated_payload-1]: %d \n",heap[allocated_payload-1]);
-	// printf("heap[next]: %d \n",heap[next]);
-	// printf("heap[next-1]: %d \n",heap[next-1]);
 
-	//printf("free function\n");
 }
 
 int is_alloc(int address){
@@ -218,13 +215,13 @@ void blocklist(){
 		else
 			printf("%d, %d, %s", count + 1, payload_length - 1, FREE);
 			
-		//printf("current count: %d \n",count);
+		
 		if (payload_length == 0){
 			return;
 		}
 		count = count +  payload_length;
 
-		//printf("next count: %d \n",count);	
+			
 	}	
 }
 void writemem(int address, char* str){
@@ -235,18 +232,17 @@ void writemem(int address, char* str){
 	int limit = address + len;
 
 
-
 	while (address < limit){
 		heap[address] = (int) str[str_count];
 
-		printf("%02X \n",heap[address]);
+		//printf("%02X \n",heap[address]);
 
 		address++;
 		str_count++;
 	}
 
-	printf("writemem - arg1: %d, arg2:%s\n", address, str);
-	printf("limit: %d\n",limit);
+	// printf("writemem - arg1: %d, arg2:%s\n", address, str);
+	// printf("limit: %d\n",limit);
 
 }
 
